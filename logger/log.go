@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2021-12-20 09:58:16
  * @LastEditors: solid
- * @LastEditTime: 2021-12-29 09:30:52
+ * @LastEditTime: 2022-07-11 16:37:44
  */
 /*
  * @Description:
@@ -19,8 +19,6 @@ package logger
 import (
 	"fmt"
 	"os"
-	"path"
-	"runtime"
 	"time"
 	_ "unsafe"
 
@@ -165,13 +163,8 @@ func setLoggerFile(lev_name string, encoder zapcore.Encoder) zapcore.Core {
 	priority := zap.LevelEnablerFunc(func(lev2 zapcore.Level) bool { //info和debug级别,debug级别是最低的
 		return levelMap[lev_name] == lev2
 	})
-	var abPath string
-	_, filename, _, ok := runtime.Caller(0)
-	if ok {
-		abPath = path.Dir(filename)
-	}
 
-	filename = fmt.Sprintf(`%s\log\%s-%s-%s\%s.log`, abPath, time.Now().Format("2006"), time.Now().Format("01"), time.Now().Format("02"), lev_name)
+	filename := fmt.Sprintf(`.\log\%s-%s-%s\%s.log`, time.Now().Format("2006"), time.Now().Format("01"), time.Now().Format("02"), lev_name)
 	//info文件writeSyncer
 	infoFileWriteSyncer := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   filename, //日志文件存放目录，如果文件夹不存在会自动创建

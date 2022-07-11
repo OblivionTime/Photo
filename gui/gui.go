@@ -6,6 +6,8 @@ package gui
 
 import (
 	"os"
+	"path"
+	"path/filepath"
 	"photo/change"
 	"photo/logger"
 	"photo/utils"
@@ -90,6 +92,9 @@ func Gui() {
 										{1, "生成小图标"},
 										{2, "修改图片大小"},
 										{3, "图片文件转换"},
+										{4, "生成小图标(目录)"},
+										{5, "修改图片大小(目录)"},
+										{6, "图片文件转换(目录)"},
 									},
 								},
 							},
@@ -216,7 +221,14 @@ func (mw *MyMainWindow) selectFile() {
 	} else if !ok {
 		return
 	}
-	filePath := dlg.FilePath
+	var filePath string
+	index := mw.ChooseComboBox.CurrentIndex()
+	if index == 3 || index == 4 || index == 5 {
+		filePath, _ = filepath.Split(dlg.FilePath)
+	} else {
+		filePath = dlg.FilePath
+	}
+
 	mw.SrcPathedit.SetText(filePath)
 }
 func (mw *MyMainWindow) sumbit() {
@@ -234,16 +246,7 @@ func (mw *MyMainWindow) sumbit() {
 		TargetHeight: utils.String2Number(mw.TargetHeightedit.Text()),
 	}
 	if my.Choose == 0 {
-		var p string
-		if utils.IsDir(my.SrcPath) {
-			//遍历出所有图片
-			fileList := utils.GetImgFiles(my.SrcPath, "")
-			for _, SrcPath := range fileList {
-				p = change.GetIcon(SrcPath)
-			}
-		} else {
-			p = change.GetIcon(my.SrcPath)
-		}
+		p := change.GetIcon(my.SrcPath)
 		Popup2(mw, "生成成功!!!!!!!!!!")
 		mw.webView.SetURL(p)
 	} else if my.Choose == 1 {
@@ -252,6 +255,41 @@ func (mw *MyMainWindow) sumbit() {
 		mw.webView.SetURL(p)
 	} else if my.Choose == 2 {
 		p := change.ChangePhoto(my.SrcPath, my.TargetPath, my.TargetType)
+		Popup2(mw, "修改成功!!!!!!!!!!")
+		mw.webView.SetURL(p)
+	} else if my.Choose == 3 {
+		//遍历出所有图片
+		fileList := utils.GetImgFiles(my.SrcPath, "")
+		for _, SrcPath := range fileList {
+			change.GetIcon(SrcPath)
+		}
+		dirPath, _ := os.Getwd()
+		p := dirPath + `\icon\`
+		Popup2(mw, "生成成功!!!!!!!!!!")
+		mw.webView.SetURL(p)
+	} else if my.Choose == 4 {
+		//遍历出所有图片
+		fileList := utils.GetImgFiles(my.SrcPath, "")
+		for _, SrcPath := range fileList {
+			change.Reset(SrcPath, my.TargetPath, my.TargetWidth, my.TargetHeight)
+		}
+		dirPath, _ := os.Getwd()
+		p := dirPath + `/reset/`
+		Popup2(mw, "修改成功!!!!!!!!!!")
+		mw.webView.SetURL(p)
+	} else if my.Choose == 5 {
+		//遍历出所有图片
+		fileList := utils.GetImgFiles(my.SrcPath, "")
+		for _, SrcPath := range fileList {
+			ext := path.Ext(SrcPath)
+
+			if ext[1:] == my.TargetType {
+				continue
+			}
+			change.ChangePhoto(SrcPath, my.TargetPath, my.TargetType)
+		}
+		dirPath, _ := os.Getwd()
+		p := dirPath + `\newPhoto\`
 		Popup2(mw, "修改成功!!!!!!!!!!")
 		mw.webView.SetURL(p)
 	} else {

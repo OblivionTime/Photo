@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-06-14 18:25:19
  * @LastEditors: solid
- * @LastEditTime: 2022-07-11 10:44:01
+ * @LastEditTime: 2022-07-11 16:46:24
  */
 package utils
 
@@ -58,11 +58,11 @@ func GetImgFiles(pathSrc string, imgType string) []string {
 		ext := path.Ext(file.Name())
 		if !flag {
 			if ext == ".webp" || ext == ".webp2" || ext == ".bmp" || ext == ".jpeg" || ext == ".jpg" || ext == ".png" || ext == ".tiff" {
-				imgFileList = append(imgFileList, file.Name())
+				imgFileList = append(imgFileList, pathSrc+file.Name())
 			}
 		} else {
 			if ext == imgType {
-				imgFileList = append(imgFileList, file.Name())
+				imgFileList = append(imgFileList, pathSrc+file.Name())
 			}
 		}
 	}
